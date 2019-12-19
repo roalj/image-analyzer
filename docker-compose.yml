@@ -1,0 +1,44 @@
+version: "3"
+services:
+  image-analyzer:
+    image: rkosir123/image-analyzer
+    environment:
+      KUMULUZEE_CONFIG_ETCD_HOSTS: http://etcd:2379
+      KUMULUZEE_DISCOVERY_ETCD_HOSTS: http://etcd:2379
+    ports:
+      - 8082:8082
+    depends_on:
+      - etcd
+  comments:
+    image: rkosir123/comments
+    environment:
+      KUMULUZEE_DATASOURCES0_CONNECTIONURL: jdbc:postgresql://database-1.cgjpznojjyw2.eu-central-1.rds.amazonaws.com/comments
+      KUMULUZEE_CONFIG_ETCD_HOSTS: http://etcd:2379
+      KUMULUZEE_DISCOVERY_ETCD_HOSTS: http://etcd:2379
+    ports:
+      - 8081:8081
+    depends_on:
+      - etcd
+  image-catalog:
+    image: rkosir123/image-catalog
+    ports:
+      - 8080:8080
+    environment:
+      KUMULUZEE_DATASOURCES0_CONNECTIONURL: jdbc:postgresql://database-1.cgjpznojjyw2.eu-central-1.rds.amazonaws.com/image
+      KUMULUZEE_CONFIG_ETCD_HOSTS: http://etcd:2379
+      KUMULUZEE_DISCOVERY_ETCD_HOSTS: http://etcd:2379
+    depends_on:
+      - etcd
+  etcd:
+    image: quay.io/coreos/etcd:latest
+    ports:
+      - 2379:2379
+    command: >-
+      /usr/local/bin/etcd
+      -name node1
+      -advertise-client-urls http://etcd:2379
+      -listen-client-urls http://0.0.0.0:2379
+      -initial-advertise-peer-urls http://etcd:2380
+      -listen-peer-urls http://0.0.0.0:2380
+      -initial-cluster node1=http://etcd:2380
+      -cors="*"
