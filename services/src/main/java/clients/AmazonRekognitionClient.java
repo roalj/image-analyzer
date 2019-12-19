@@ -8,9 +8,11 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
 import com.amazonaws.services.rekognition.model.*;
+import config.AppProperties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,8 +20,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class AmazonRekognitionClient {
 
-//    @Inject
-//    private AppProperties appProperties;
+    @Inject
+    private AppProperties appProperties;
 
     private AmazonRekognition rekognitionClient;
 
@@ -29,8 +31,8 @@ public class AmazonRekognitionClient {
         AWSCredentials credentials;
         try {
             credentials = new BasicAWSCredentials(
-                   "AKIAYNGGH2MZDZUTZ377",
-                    "PjX1HWiyY57/qo8lJyPS8S24rzlZFANZfegKeSdc");
+                   appProperties.getAccessKey(),
+                    appProperties.getSecretKey());
         } catch (Exception e) {
             throw new AmazonClientException("Cannot initialise the credentials.", e);
         }

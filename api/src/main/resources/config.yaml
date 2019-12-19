@@ -7,3 +7,14 @@ kumuluzee:
     base-url: http://localhost:8082
     http:
       port: 8082
+  config:
+    etcd:
+      hosts: http://192.168.29.109:2379
+  discovery:
+    etcd:
+      hosts: http://192.168.29.109:2379
+
+app-properties:
+  rekognition:
+    access-key: AKIAYNGGH2MZDZUTZ377
+    secret-key: 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
