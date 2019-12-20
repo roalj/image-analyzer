@@ -46,6 +46,10 @@
             <artifactId>services</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>kumuluzee-config-etcd</artifactId>
+            <groupId>com.kumuluz.ee.config</groupId>
+        </dependency>
     </dependencies>
 
     <build>
