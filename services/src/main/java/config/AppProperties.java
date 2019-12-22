@@ -15,6 +15,17 @@ public class AppProperties {
     @ConfigValue(value = "rekognition.secret-key", watch = true)
     private String secretKey;
 
+    @ConfigValue(value = "image-analyzer.mongodb-url", watch = true)
+    private String mongoDBURL;
+
+    public String getMongoDBURL() {
+        return mongoDBURL;
+    }
+
+    public void setMongoDBURL(String mongoDBURL) {
+        this.mongoDBURL = mongoDBURL;
+    }
+
     public String getSecretKey() {
         return secretKey;
     }

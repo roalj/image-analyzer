@@ -2,6 +2,7 @@ package resources;
 
 import clients.AmazonRekognitionClient;
 import com.amazonaws.services.rekognition.model.Label;
+import services.AnalyzerBean;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,9 +21,14 @@ public class AnalyzerResource {
     @Inject
     private AmazonRekognitionClient amazonRekognitionClient;
 
-    @GET
-    public Integer getCommentsList() {
-       return 42;
+    @Inject
+    private AnalyzerBean analyzerBean;
+
+    @POST
+    @Path("/test")
+    public Response getCommentsList() {
+       analyzerBean.createOne();
+       return Response.status(Response.Status.CREATED).entity("CREATED").build();
     }
 
     @POST
