@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-analyzer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-analyzer
+  template:
+    metadata:
+      labels:
+        app: image-analyzer
+    spec:
+      containers:
+        - image: rkosir123/image-analyzer:1.1
+          name: image-analyzer
+          env:
+            - name: KUMULUZEE_DISCOVERY_CLUSTER
+              value: gcloud
+            - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
+              value: http://etcd:2379
+            - name: KUMULUZEE_CONFIG_ETCD_HOSTS
+              value: http://etcd:2379
+            - name: KUMULUZEE_SERVER_BASEURL
+              value: http://34.76.248.125:8080
+            - name:  APP-PROPERTIES_IMAGE-ANALYZER_MONGODB-URL
+              value: mongodb+srv://rkosir:logitech123@cluster0-49egp.mongodb.net/test?retryWrites=true&w=majority
+          ports:
+            - containerPort: 8082
+              name: server
+              protocol: TCP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-analyzer
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8082
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: image-analyzer
