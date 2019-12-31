@@ -25,12 +25,20 @@ public class AmazonRekognitionCheck implements HealthCheck {
     @Inject
     private AppProperties properties;
 
+    private boolean isEnabled;
+
+    @PostConstruct
+    private void init() {
+        isEnabled = properties.isEnabled();
+    }
+
+
     @Override
     public HealthCheckResponse call() {
         AWSCredentials credentials;
         AmazonRekognition rekognitionClient;
 
-        if (properties.isEnabled()) {
+        if (isEnabled) {
             try {
                 credentials = new BasicAWSCredentials(
                         properties.getAccessKey(),
