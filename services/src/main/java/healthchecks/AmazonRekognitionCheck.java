@@ -32,7 +32,7 @@ public class AmazonRekognitionCheck implements HealthCheck {
         AmazonRekognition rekognitionClient;
 
         try {
-            if(!properties.isEnabled()) {
+            if(properties.isEnabled()) {
                 credentials = new BasicAWSCredentials(
                         properties.getAccessKey(),
                         properties.getSecretKey());
