@@ -25,43 +25,28 @@ public class AmazonRekognitionCheck implements HealthCheck {
     @Inject
     private AppProperties properties;
 
-    private boolean isEnabled;
-
-    @PostConstruct
-    private void init() {
-        isEnabled = properties.isEnabled();
-    }
-
-
     @Override
     public HealthCheckResponse call() {
         AWSCredentials credentials;
         AmazonRekognition rekognitionClient;
 
-        if (isEnabled) {
-            try {
-                credentials = new BasicAWSCredentials(
-                        properties.getAccessKey(),
-                        properties.getSecretKey());
-            } catch (Exception e) {
-                return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
-            }
-
-            try {
-                rekognitionClient = AmazonRekognitionClientBuilder
-                        .standard()
-                        .withRegion(Regions.EU_WEST_1)
-                        .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                        .build();
-            } catch (Exception e) {
-                return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
-            }
-        } else {
+        try {
+            credentials = new BasicAWSCredentials(
+                    properties.getAccessKey(),
+                    properties.getSecretKey());
+        } catch (Exception e) {
             return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
         }
 
-
-
+        try {
+            rekognitionClient = AmazonRekognitionClientBuilder
+                    .standard()
+                    .withRegion(Regions.EU_WEST_1)
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .build();
+        } catch (Exception e) {
+            return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
+        }
         return HealthCheckResponse.up(AmazonRekognitionCheck.class.getSimpleName());
     }
 }

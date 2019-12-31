@@ -28,11 +28,15 @@ public class AmazonRekognitionClient {
     @PostConstruct
     private void init() {
 
-        AWSCredentials credentials;
+        AWSCredentials credentials = null;
+
         try {
-            credentials = new BasicAWSCredentials(
-                   appProperties.getAccessKey(),
-                    appProperties.getSecretKey());
+            //testcase for health check
+            if (appProperties.isEnabled()) {
+                credentials = new BasicAWSCredentials(
+                        appProperties.getAccessKey(),
+                        appProperties.getSecretKey());
+            }
         } catch (Exception e) {
             throw new AmazonClientException("Cannot initialise the credentials.", e);
         }
