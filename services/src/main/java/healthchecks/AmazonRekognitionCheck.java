@@ -17,29 +17,32 @@ import org.eclipse.microprofile.health.Readiness;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @Readiness
-@ApplicationScoped
+@RequestScoped
 public class AmazonRekognitionCheck implements HealthCheck {
     @Inject
     private AppProperties properties;
 
     @Override
     public HealthCheckResponse call() {
-        AWSCredentials credentials;
+        AWSCredentials credentials = null;
         AmazonRekognition rekognitionClient;
 
         try {
-            credentials = new BasicAWSCredentials(
-                    properties.getAccessKey(),
-                    properties.getSecretKey());
+            if(!properties.isEnabled()) {
+                credentials = new BasicAWSCredentials(
+                        properties.getAccessKey(),
+                        properties.getSecretKey());
+            }
         } catch (Exception e) {
             return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
         }
 
         try {
-            rekognitionClient = AmazonRekognitionClientBuilder
+            AmazonRekognitionClientBuilder
                     .standard()
                     .withRegion(Regions.EU_WEST_1)
                     .withCredentials(new AWSStaticCredentialsProvider(credentials))
