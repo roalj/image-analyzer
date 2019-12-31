@@ -52,11 +52,6 @@ public class AnalyzerBean {
     @PostConstruct
     private void init() {
         httpClient = ClientBuilder.newClient();
-
-        //testcase for health check
-        if(!properties.isEnabled()) {
-            amazonRekognitionClient = null;
-        }
     }
 
     public AnalysisEntity analyze(Integer imageId) {
