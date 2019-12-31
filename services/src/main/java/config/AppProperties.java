@@ -18,6 +18,9 @@ public class AppProperties {
     @ConfigValue(value = "image-analyzer.mongodb-url", watch = true)
     private String mongoDBURL;
 
+    @ConfigValue(value = "rekognition.enabled", watch = true)
+    private boolean enabled;
+
     public String getMongoDBURL() {
         return mongoDBURL;
     }
@@ -41,5 +44,13 @@ public class AppProperties {
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
 
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

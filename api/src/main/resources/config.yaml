@@ -21,3 +21,7 @@ kumuluzee:
       web-instrumentation:
         - name: image-analyzer-endpoint
           url-pattern: api/image-analyzer/*
+
+app-properties:
+  rekognition:
+    enabled: true

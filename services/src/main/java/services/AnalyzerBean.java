@@ -55,10 +55,9 @@ public class AnalyzerBean {
         MongoCollection<Document> collection = database.getCollection("analysis");
 
 
-        AnalysisEntity analysisEntity = new AnalysisEntity();
-        analysisEntity = getAnalysis(imageId);
+        if(getAnalysis(imageId) == null) {
+            AnalysisEntity analysisEntity = new AnalysisEntity();
 
-        if(analysisEntity == null) {
             byte[] imageBytes = getBytesFromURL(getImageURL(imageId));
 
             analysisEntity.setImageId(imageId);
@@ -80,7 +79,7 @@ public class AnalyzerBean {
 
             return analysisEntity;
         }
-        return analysisEntity;
+        return getAnalysis(imageId);
     }
 
     public AnalysisEntity getAnalysis(int imageId) {
