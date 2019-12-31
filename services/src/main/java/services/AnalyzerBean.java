@@ -54,27 +54,48 @@ public class AnalyzerBean {
         MongoDatabase database = mongoClient.getDatabase("image-analyzer");
         MongoCollection<Document> collection = database.getCollection("analysis");
 
-        byte[] imageBytes = getBytesFromURL(getImageURL(imageId));
 
         AnalysisEntity analysisEntity = new AnalysisEntity();
-        analysisEntity.setImageId(imageId);
-        analysisEntity.setCelebrities(getCelebrities(imageBytes));
-        analysisEntity.setNumberOfFaces(getNumberOfFaces(imageBytes));
-        analysisEntity.setScenes(getScenes(imageBytes));
+        analysisEntity = getAnalysis(imageId);
 
-        Document scenes = new Document();
-        for (Label scene : analysisEntity.getScenes()) {
-            scenes.append(scene.getName(), scene.getConfidence());
+        if(analysisEntity == null) {
+            byte[] imageBytes = getBytesFromURL(getImageURL(imageId));
+
+            analysisEntity.setImageId(imageId);
+            analysisEntity.setCelebrities(getCelebrities(imageBytes));
+            analysisEntity.setNumberOfFaces(getNumberOfFaces(imageBytes));
+            analysisEntity.setScenes(getScenes(imageBytes));
+
+            Document scenes = new Document();
+            for (Label scene : analysisEntity.getScenes()) {
+                scenes.append(scene.getName(), scene.getConfidence());
+            }
+            Document analysis = new Document("imageId", imageId)
+                    .append("numberOfFaces", analysisEntity.getNumberOfFaces())
+                    .append("numberOfCelebrities", analysisEntity.getCelebrities().size())
+                    .append("celebrities", analysisEntity.getCelebrities())
+                    .append("scenes", scenes);
+
+            collection.insertOne(analysis);
+
+            return analysisEntity;
         }
-        Document analysis = new Document("imageId", imageId)
-                .append("numberOfFaces", analysisEntity.getNumberOfFaces())
-                .append("numberOfCelebrities", analysisEntity.getCelebrities().size())
-                .append("celebrities", analysisEntity.getCelebrities())
-                .append("scenes", scenes);
-
-        collection.insertOne(analysis);
-
         return analysisEntity;
+    }
+
+    public AnalysisEntity getAnalysis(int imageId) {
+        MongoDatabase database = mongoClient.getDatabase("image-analyzer");
+        MongoCollection<Document> collection = database.getCollection("analysis");
+        FindIterable<Document> iterDoc = collection.find();
+        Iterator it = iterDoc.iterator();
+
+        while (it.hasNext()) {
+            Document doc = (Document) it.next();
+            if (doc.getInteger("imageId") == imageId) {
+                return getAnalysisEntity(doc);
+            }
+        }
+        return null;
     }
 
     public List<AnalysisEntity> getAll() {
@@ -83,26 +104,12 @@ public class AnalyzerBean {
         FindIterable<Document> iterDoc = collection.find();
         List<AnalysisEntity> analysis = new ArrayList<>();
 
-
         // Getting the iterator
         Iterator it = iterDoc.iterator();
 
         while (it.hasNext()) {
             Document doc = (Document) it.next();
-            AnalysisEntity analysisEntity = new AnalysisEntity();
-            analysisEntity.setImageId(doc.getInteger("imageId"));
-            analysisEntity.setNumberOfFaces(doc.getInteger("numberOfFaces"));
-            analysisEntity.setCelebrities((List<String>) doc.get("celebrities"));
-            Document scenes = (Document) doc.get("scenes");
-            List<Label> labels = new ArrayList<>();
-            for (Map.Entry<String, Object> entry : scenes.entrySet()) {
-                Label label = new Label();
-                label.setName(entry.getKey());
-                Double doubleConf = (Double) entry.getValue();
-                label.setConfidence(doubleConf.floatValue());
-                labels.add(label);
-            }
-            analysisEntity.setScenes(labels);
+            AnalysisEntity analysisEntity = getAnalysisEntity(doc);
             analysis.add(analysisEntity);
         }
 
@@ -154,6 +161,25 @@ public class AnalyzerBean {
         byte[] img = output.toByteArray();
 
         return img;
+    }
+
+    private AnalysisEntity getAnalysisEntity(Document doc) {
+        AnalysisEntity analysisEntity = new AnalysisEntity();
+        analysisEntity.setImageId(doc.getInteger("imageId"));
+        analysisEntity.setNumberOfFaces(doc.getInteger("numberOfFaces"));
+        analysisEntity.setCelebrities((List<String>) doc.get("celebrities"));
+        Document scenes = (Document) doc.get("scenes");
+        List<Label> labels = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : scenes.entrySet()) {
+            Label label = new Label();
+            label.setName(entry.getKey());
+            Double doubleConf = (Double) entry.getValue();
+            label.setConfidence(doubleConf.floatValue());
+            labels.add(label);
+        }
+        analysisEntity.setScenes(labels);
+
+        return analysisEntity;
     }
 
 
