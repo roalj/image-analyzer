@@ -46,9 +46,6 @@ public class AnalyzerBean {
     @Inject
     private MongoClient mongoClient;
 
-    @Inject
-    private AppProperties properties;
-
     @PostConstruct
     private void init() {
         httpClient = ClientBuilder.newClient();

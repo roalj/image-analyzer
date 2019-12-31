@@ -38,20 +38,12 @@ public class AmazonRekognitionClient {
         } catch (Exception e) {
             throw new AmazonClientException("Cannot initialise the credentials.", e);
         }
-        //testcase for health check
-        if(appProperties.isEnabled()) {
-            rekognitionClient = AmazonRekognitionClientBuilder
-                    .standard()
-                    .withRegion(Regions.EU_WEST_1)
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .build();
-        } else {
-            rekognitionClient = AmazonRekognitionClientBuilder
-                    .standard()
-                    .withRegion(Regions.EU_WEST_1)
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("ASDASDASD", "ASDASDAS")))
-                    .build();
-        }
+        rekognitionClient = AmazonRekognitionClientBuilder
+                .standard()
+                .withRegion(Regions.EU_WEST_1)
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .build();
+
     }
 
     public Integer countFaces(byte[] imageBytes) {
