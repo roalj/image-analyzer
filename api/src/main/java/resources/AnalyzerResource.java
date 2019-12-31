@@ -26,4 +26,9 @@ public class AnalyzerResource {
     public Response analyze(@PathParam("imageId") Integer imageId) {
        return Response.status(Response.Status.CREATED).entity(analyzerBean.analyze(imageId)).build();
     }
+
+    @GET
+    public Response getAll() {
+        return Response.status(Response.Status.CREATED).entity(analyzerBean.getAll()).build();
+    }
 }

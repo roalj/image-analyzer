@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 @RequestScoped
@@ -80,19 +77,36 @@ public class AnalyzerBean {
         return analysisEntity;
     }
 
-    public void getAll() {
+    public List<AnalysisEntity> getAll() {
         MongoDatabase database = mongoClient.getDatabase("image-analyzer");
         MongoCollection<Document> collection = database.getCollection("analysis");
         FindIterable<Document> iterDoc = collection.find();
-        int i = 1;
+        List<AnalysisEntity> analysis = new ArrayList<>();
+
 
         // Getting the iterator
         Iterator it = iterDoc.iterator();
 
         while (it.hasNext()) {
-            System.out.println(it.next());
-            i++;
+            Document doc = (Document) it.next();
+            AnalysisEntity analysisEntity = new AnalysisEntity();
+            analysisEntity.setImageId(doc.getInteger("imageId"));
+            analysisEntity.setNumberOfFaces(doc.getInteger("numberOfFaces"));
+            analysisEntity.setCelebrities((List<String>) doc.get("celebrities"));
+            Document scenes = (Document) doc.get("scenes");
+            List<Label> labels = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : scenes.entrySet()) {
+                Label label = new Label();
+                label.setName(entry.getKey());
+                Double doubleConf = (Double) entry.getValue();
+                label.setConfidence(doubleConf.floatValue());
+                labels.add(label);
+            }
+            analysisEntity.setScenes(labels);
+            analysis.add(analysisEntity);
         }
+
+        return analysis;
     }
 
     private Integer getNumberOfFaces(byte[] bytes) {
