@@ -9,6 +9,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import config.AppProperties;
 import entities.AnalysisEntity;
 import org.bson.Document;
 
@@ -45,9 +46,17 @@ public class AnalyzerBean {
     @Inject
     private MongoClient mongoClient;
 
+    @Inject
+    private AppProperties properties;
+
     @PostConstruct
     private void init() {
         httpClient = ClientBuilder.newClient();
+
+        //testcase for health check
+        if(!properties.isEnabled()) {
+            amazonRekognitionClient = null;
+        }
     }
 
     public AnalysisEntity analyze(Integer imageId) {
