@@ -21,7 +21,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @Readiness
-@RequestScoped
+@ApplicationScoped
 public class AmazonRekognitionCheck implements HealthCheck {
     @Inject
     private AppProperties properties;

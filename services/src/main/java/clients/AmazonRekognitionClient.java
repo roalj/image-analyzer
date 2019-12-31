@@ -38,11 +38,15 @@ public class AmazonRekognitionClient {
         } catch (Exception e) {
             throw new AmazonClientException("Cannot initialise the credentials.", e);
         }
-        rekognitionClient = AmazonRekognitionClientBuilder
-                .standard()
-                .withRegion(Regions.EU_WEST_1)
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .build();
+        try {
+            rekognitionClient = AmazonRekognitionClientBuilder
+                    .standard()
+                    .withRegion(Regions.EU_WEST_1)
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .build();
+        } catch (Exception e) {
+            throw new AmazonClientException("WRONG CREDENTIALS", e);
+        }
 
     }
 
