@@ -35,11 +35,7 @@ public class AmazonRekognitionCheck implements HealthCheck {
             credentials = new BasicAWSCredentials(
                     properties.getAccessKey(),
                     properties.getSecretKey());
-        } catch (Exception e) {
-            return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
-        }
 
-        try {
             AmazonRekognitionClientBuilder
                     .standard()
                     .withRegion(Regions.EU_WEST_1)
@@ -48,6 +44,7 @@ public class AmazonRekognitionCheck implements HealthCheck {
         } catch (Exception e) {
             return HealthCheckResponse.down(AmazonRekognitionCheck.class.getSimpleName());
         }
+
         return HealthCheckResponse.up(AmazonRekognitionCheck.class.getSimpleName());
     }
 }
