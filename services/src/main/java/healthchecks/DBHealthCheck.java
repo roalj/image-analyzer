@@ -19,6 +19,8 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class DBHealthCheck implements HealthCheck {
 
+    private static final Logger LOG = Logger.getLogger(DBHealthCheck.class.getName());
+
     @Inject
     private AppProperties properties;
 
@@ -31,18 +33,39 @@ public class DBHealthCheck implements HealthCheck {
 
     @Override
     public HealthCheckResponse call() {
-        MongoClientOptions.Builder o = MongoClientOptions.builder().connectTimeout(3000);
-        MongoClientURI uri = new MongoClientURI(url);
-        MongoClient mongoClient = new MongoClient(uri);
+        MongoClient mongoClient = null;
+        LOG.info("MONGODB URL: " + url);
 
         try {
-            mongoClient.listDatabases();
+            MongoClientURI uri = new MongoClientURI(url);
+            mongoClient = new MongoClient(uri);
+
+            if (databaseExist(mongoClient, uri.getDatabase())) {
+                return HealthCheckResponse.up(DBHealthCheck.class.getSimpleName());
+            } else {
+                LOG.severe("NO DB FOUND");
+                return HealthCheckResponse.down(DBHealthCheck.class.getSimpleName());
+            }
         } catch (Exception e) {
-            System.out.println("Mongo is down");
-            mongoClient.close();
+            LOG.severe("NO connection established");
             return HealthCheckResponse.down(DBHealthCheck.class.getSimpleName());
+        } finally {
+            if (mongoClient != null) {
+                mongoClient.close();
+            }
+        }
+    }
+
+    private Boolean databaseExist(MongoClient mongoClient, String databaseName) {
+
+        if (mongoClient != null && databaseName != null) {
+
+            for (String s : mongoClient.listDatabaseNames()) {
+                if (s.equals(databaseName))
+                    return true;
+            }
         }
 
-        return HealthCheckResponse.up(DBHealthCheck.class.getSimpleName());
+        return false;
     }
 }
