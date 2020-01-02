@@ -2,8 +2,10 @@ package resources;
 
 import clients.AmazonRekognitionClient;
 import com.amazonaws.services.rekognition.model.Label;
+import com.kumuluz.ee.streaming.common.annotations.StreamProducer;
 import entities.AnalysisEntity;
 import services.AnalyzerBean;
+import streaming.EventProducer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,6 +24,10 @@ public class AnalyzerResource {
     @Inject
     private AnalyzerBean analyzerBean;
 
+    @Inject
+    private EventProducer eventProducer;
+
+
     @GET
     public Response getAll() {
         return Response.status(Response.Status.CREATED).entity(analyzerBean.getAll()).build();
@@ -31,6 +37,8 @@ public class AnalyzerResource {
     @Path("/{imageId}")
     public Response analyze(@PathParam("imageId") Integer imageId) {
         AnalysisEntity analysisEntity = analyzerBean.analyze(imageId);
+
+        eventProducer.produceMessage(analysisEntity.getNumberOfFaces() + "" , analysisEntity.getImageId() + "");
 
         return Response.status(Response.Status.CREATED).entity(analysisEntity).build();
     }

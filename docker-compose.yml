@@ -5,7 +5,7 @@ services:
     environment:
       KUMULUZEE_CONFIG_ETCD_HOSTS: http://etcd:2379
       KUMULUZEE_DISCOVERY_ETCD_HOSTS: http://etcd:2379
-#      APP-PROPERTIES_IMAGE-ANALYZER_MONGODB-URL: mongodb+srv://rkosir:logitech123@cluster0-49egp.mongodb.net/test?retryWrites=true&w=majority
+      APP-PROPERTIES_IMAGE-ANALYZER_MONGODB-URL: mongodb+srv://rkosir:logitech123@cluster0-49egp.mongodb.net/test?retryWrites=true&w=majority
     ports:
       - 8082:8082
     depends_on:

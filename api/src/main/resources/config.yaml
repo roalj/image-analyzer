@@ -21,6 +21,25 @@ kumuluzee:
       web-instrumentation:
         - name: image-analyzer-endpoint
           url-pattern: api/image-analyzer/*
+  streaming:
+    kafka:
+      producer:
+        bootstrap-servers: moped-01.srvs.cloudkafka.com:9094
+        acks: all
+        retries: 0
+        batch-size: 16384
+        linger-ms: 1
+        buffer-memory: 33554432
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        security-protocol: SASL_SSL
+        sasl-mechanism: SCRAM-SHA-256
+        group-id: newer
+        enable-auto-commit: true
+        auto-commit-interval-ms: 1000
+        auto-offset-reset: earliest
+        session-timeout-ms: 30000
+        sasl-jaas-config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="wb3hbo45" password="474l1lVnjOBE2otP1ngmL3PIh9FkN1e6";'
 
 app-properties:
   rekognition:
