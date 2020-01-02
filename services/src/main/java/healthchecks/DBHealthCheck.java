@@ -1,21 +1,17 @@
 package healthchecks;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.ServerAddress;
 import config.AppProperties;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
-import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.health.Liveness;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.logging.Logger;
 
-@Readiness
+@Liveness
 @ApplicationScoped
 public class DBHealthCheck implements HealthCheck {
 
@@ -40,12 +36,8 @@ public class DBHealthCheck implements HealthCheck {
             MongoClientURI uri = new MongoClientURI(url);
             mongoClient = new MongoClient(uri);
 
-            if (databaseExist(mongoClient, uri.getDatabase())) {
-                return HealthCheckResponse.up(DBHealthCheck.class.getSimpleName());
-            } else {
-                LOG.severe("NO DB FOUND");
-                return HealthCheckResponse.down(DBHealthCheck.class.getSimpleName());
-            }
+            return HealthCheckResponse.up(DBHealthCheck.class.getSimpleName());
+
         } catch (Exception e) {
             LOG.severe("NO connection established");
             return HealthCheckResponse.down(DBHealthCheck.class.getSimpleName());
