@@ -1,21 +1,19 @@
 package resources;
 
-import clients.AmazonRekognitionClient;
-import com.amazonaws.services.rekognition.model.Label;
-import com.kumuluz.ee.streaming.common.annotations.StreamProducer;
+import clients.ImageAnalysingApi;
 import entities.AnalysisEntity;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import services.AnalyzerBean;
 import streaming.EventProducer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 @Path("/analyze")
@@ -27,6 +25,9 @@ public class AnalyzerResource {
     @Inject
     private EventProducer eventProducer;
 
+    @Inject
+    @RestClient
+    private ImageAnalysingApi imageAnalysingApi;
 
     @GET
     public Response getAll() {
@@ -38,7 +39,10 @@ public class AnalyzerResource {
     public Response analyze(@PathParam("imageId") Integer imageId) {
         AnalysisEntity analysisEntity = analyzerBean.analyze(imageId);
 
-        eventProducer.produceMessage(analysisEntity.getNumberOfFaces() + "" , analysisEntity.getImageId() + "");
+        CompletionStage<Void> stringCompletionStage =
+                imageAnalysingApi.processImageAsynch(imageId);
+
+        stringCompletionStage.whenComplete((s, throwable) -> System.out.println(s));
 
         return Response.status(Response.Status.CREATED).entity(analysisEntity).build();
     }

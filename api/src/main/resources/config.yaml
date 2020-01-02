@@ -40,6 +40,11 @@ kumuluzee:
         auto-offset-reset: earliest
         session-timeout-ms: 30000
         sasl-jaas-config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="wb3hbo45" password="474l1lVnjOBE2otP1ngmL3PIh9FkN1e6";'
+  rest-client:
+    registrations:
+      - class: image-analysing-api
+        url: http://localhost:8089/api
+        read-timeout: 5000
 
 app-properties:
   rekognition:

@@ -10,6 +10,15 @@ public class AnalysisEntity {
     private List<String> celebrities;
     private List<Label> scenes;
 
+    public AnalysisEntity() {}
+
+    public AnalysisEntity(Integer imageId, Integer numberOfFaces, List<String> celebrities, List<Label> scenes) {
+        this.imageId = imageId;
+        this.numberOfFaces = numberOfFaces;
+        this.celebrities = celebrities;
+        this.scenes = scenes;
+    }
+
     public Integer getImageId() {
         return imageId;
     }
