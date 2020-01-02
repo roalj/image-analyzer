@@ -37,14 +37,12 @@ public class AnalyzerResource {
     @POST
     @Path("/{imageId}")
     public Response analyze(@PathParam("imageId") Integer imageId) {
-        AnalysisEntity analysisEntity = analyzerBean.analyze(imageId);
-
         CompletionStage<Void> stringCompletionStage =
-                imageAnalysingApi.processImageAsynch(imageId);
+                imageAnalysingApi.processImageAsynch(analyzerBean.analyze(imageId));
 
         stringCompletionStage.whenComplete((s, throwable) -> System.out.println(s));
 
-        return Response.status(Response.Status.CREATED).entity(analysisEntity).build();
+        return Response.status(Response.Status.CREATED).entity("Slika se analizira").build();
     }
 
     @GET

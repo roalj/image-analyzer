@@ -19,5 +19,5 @@ import java.util.concurrent.CompletionStage;
 public interface ImageAnalysingApi {
 
     @POST
-    CompletionStage<Void> processImageAsynch(Integer imageId);
+    CompletionStage<Void> processImageAsynch(AnalysisEntity analysisEntity);
 }
