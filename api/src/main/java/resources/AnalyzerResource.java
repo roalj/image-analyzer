@@ -3,9 +3,12 @@ package resources;
 import entities.AnalysisEntity;
 import services.AnalyzerBean;
 import services.ImageAnalyzingRunnable;
-import streaming.EventProducer;
 
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,7 +17,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Response;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,11 +41,10 @@ public class AnalyzerResource {
 
     @POST
     public void analyzeImage(Integer imageId, @Suspended AsyncResponse ar) {
-        ImageAnalyzingRunnable imageAnalyzingRunnable = new ImageAnalyzingRunnable(imageId);
-
+        ImageAnalyzingRunnable imageAnalyzingRunnable = new ImageAnalyzingRunnable();
+        imageAnalyzingRunnable.setImageId(imageId);
         executor.execute(() -> {
-            imageAnalyzingRunnable.analyzeImage();
-
+            imageAnalyzingRunnable.run();
             ar.resume("OK");
         });
     }
@@ -57,5 +58,10 @@ public class AnalyzerResource {
             return Response.status(Response.Status.CREATED).entity("Analiza ne obstaja").build();
         }
         return Response.status(Response.Status.CREATED).entity(analysisEntity).build();
+    }
+
+    @PreDestroy
+    private void destroy() {
+        executor.shutdown();
     }
 }

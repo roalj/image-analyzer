@@ -1,29 +1,27 @@
 package services;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.logging.Logger;
 
-public class ImageAnalyzingRunnable implements Runnable{
+public class ImageAnalyzingRunnable implements Runnable {
     private Logger log = Logger.getLogger(ImageAnalyzingRunnable.class.getName());
 
     private Integer imageId;
+
     private AnalyzerBean analyzerBean;
 
-    public ImageAnalyzingRunnable(Integer imageId) {
-        this.imageId = imageId;
-    }
-
-    public void analyzeImage() {
+    private void analyze() {
         log.info("ANALIZIRAMO SLIKO!!! IMAGE-ANLYZER");
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        analyzerBean = CDI.current().select(AnalyzerBean.class).get();
+        analyzerBean.analyze(imageId);
     }
-
 
     @Override
     public void run() {
-        analyzeImage();
+        analyze();
+    }
+
+    public void setImageId(Integer imageId) {
+        this.imageId = imageId;
     }
 }

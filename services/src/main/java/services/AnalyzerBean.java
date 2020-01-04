@@ -14,6 +14,7 @@ import entities.AnalysisEntity;
 import org.bson.Document;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
@@ -30,7 +31,7 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.logging.Logger;
 
-@RequestScoped
+@ApplicationScoped
 public class AnalyzerBean {
     private Logger log = Logger.getLogger(AnalyzerBean.class.getName());
 
