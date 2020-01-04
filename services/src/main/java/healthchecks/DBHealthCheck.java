@@ -30,7 +30,6 @@ public class DBHealthCheck implements HealthCheck {
     @Override
     public HealthCheckResponse call() {
         MongoClient mongoClient = null;
-        LOG.info("MONGODB URL: " + url);
 
         try {
             MongoClientURI uri = new MongoClientURI(url);

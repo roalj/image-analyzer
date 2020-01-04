@@ -4,15 +4,15 @@ kumuluzee:
     name: dev
   version: 1.0.0
   server:
-    base-url: http://image-analyzer:8082
+    base-url: http://localhost:8082
     http:
       port: 8082
   config:
     etcd:
-      hosts: http://192.168.29.109:2379
+      hosts: http://localhost:2379
   discovery:
     etcd:
-      hosts: http://192.168.29.109:2379
+      hosts: http://localhost:2379
   health:
     servlet:
       mapping: /health
@@ -42,5 +42,7 @@ kumuluzee:
         sasl-jaas-config: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="wb3hbo45" password="474l1lVnjOBE2otP1ngmL3PIh9FkN1e6";'
 
 app-properties:
+  image-analyzer:
+    mongodb-url: mongodb+srv://rkosir:logitech123@cluster0-49egp.mongodb.net/test?retryWrites=true&w=majority
   rekognition:
     enabled: true
