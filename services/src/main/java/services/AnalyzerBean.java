@@ -8,6 +8,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import entities.AnalysisEntity;
+import org.apache.commons.codec.binary.Base64;
 import org.bson.Document;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,10 @@ public class AnalyzerBean {
     private Optional<String> baseUrl;
 
     @Inject
+    @DiscoverService(value = "image-filter-service", environment = "dev", version = "1.0.0")
+    private Optional<String> imageFilterBaseUrl;
+
+    @Inject
     private AmazonRekognitionClient amazonRekognitionClient;
 
     @Inject
@@ -56,7 +61,7 @@ public class AnalyzerBean {
         if(getAnalysis(imageId) == null) {
             AnalysisEntity analysisEntity = new AnalysisEntity();
 
-            byte[] imageBytes = getBytesFromURL(getImageURL(imageId));
+            byte[] imageBytes = getImageBytes(imageId);
 
             analysisEntity.setImageId(imageId);
             analysisEntity.setCelebrities(getCelebrities(imageBytes));
@@ -141,9 +146,29 @@ public class AnalyzerBean {
         return amazonRekognitionClient.sceneDetection(bytes);
     }
 
-    public String getImageURL(Integer imageId) {
+    private byte[] getImageBytes(Integer imageId) {
+        return Base64.decodeBase64(getImageString(imageId));
+    }
+
+    private String getImageString(Integer imageId) {
+        if (imageFilterBaseUrl.isPresent()) {
+            log.info("Calling imageUpload service: get image document. " + baseUrl);
+            try {
+                return httpClient
+                        .target(imageFilterBaseUrl.get() + "/api/images/getImage/" + getMongoId(imageId))
+                        .request().get(new GenericType<String>() {
+                        });
+            } catch (WebApplicationException | ProcessingException e) {
+                log.severe(e.getMessage());
+                throw new InternalServerErrorException(e);
+            }
+        }
+        return null;
+    }
+
+    public String getMongoId(Integer imageId) {
         if (baseUrl.isPresent()) {
-            log.info("IMAGE SERVICE. " + baseUrl.get() + "/api/images/url/" + imageId);
+            log.info("IMAGE SERVICE. " + baseUrl.get() + "/api/images/mongoId/" + imageId);
             try {
                 return httpClient
                         .target(baseUrl.get() + "/api/images/url/" + imageId)
