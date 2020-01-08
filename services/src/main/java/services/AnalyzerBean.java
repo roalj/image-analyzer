@@ -95,6 +95,22 @@ public class AnalyzerBean {
         return null;
     }
 
+    public boolean removeDocument(int imageId) {
+        MongoDatabase database = mongoClient.getDatabase("image-analyzer");
+        MongoCollection<Document> collection = database.getCollection("analysis");
+        FindIterable<Document> iterDoc = collection.find();
+        Iterator it = iterDoc.iterator();
+
+        while (it.hasNext()) {
+            Document doc = (Document) it.next();
+            if (doc.getInteger("imageId") == imageId) {
+                collection.deleteOne(doc);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<AnalysisEntity> getAll() {
         MongoDatabase database = mongoClient.getDatabase("image-analyzer");
         MongoCollection<Document> collection = database.getCollection("analysis");

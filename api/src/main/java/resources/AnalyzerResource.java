@@ -7,10 +7,7 @@ import services.ImageAnalyzingRunnable;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Response;
@@ -27,13 +24,13 @@ public class AnalyzerResource {
 
     @GET
     public Response getAll() {
-        return Response.status(Response.Status.CREATED).entity(analyzerBean.getAll()).build();
+        return Response.status(Response.Status.OK).entity(analyzerBean.getAll()).build();
     }
 
     @POST
     @Path("/{imageId}")
     public Response analyze(@PathParam("imageId") Integer imageId) {
-        return Response.status(Response.Status.CREATED).entity(analyzerBean.analyze(imageId)).build();
+        return Response.status(Response.Status.OK).entity(analyzerBean.analyze(imageId)).build();
     }
 
     @POST
@@ -52,9 +49,19 @@ public class AnalyzerResource {
         AnalysisEntity analysisEntity = analyzerBean.getAnalysis(imageId);
 
         if (analysisEntity == null) {
-            return Response.status(Response.Status.CREATED).entity("Analiza ne obstaja").build();
+            return Response.status(Response.Status.OK).entity("Analiza ne obstaja").build();
         }
-        return Response.status(Response.Status.CREATED).entity(analysisEntity).build();
+        return Response.status(Response.Status.OK).entity(analysisEntity).build();
+    }
+
+    @DELETE
+    @Path("/{imageId}")
+    public Response deleteAnalysis(@PathParam("imageId") Integer imageId) {
+        if (analyzerBean.removeDocument(imageId)) {
+            return Response.status(Response.Status.OK).entity("Document je bil izbrisan").build();
+        } else {
+            return Response.status(Response.Status.OK).entity("Document ni bil izbrisan").build();
+        }
     }
 
     @PreDestroy
