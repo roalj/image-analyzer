@@ -39,8 +39,8 @@ public class AnalyzerBean {
     private Optional<String> baseUrl;
 
     @Inject
-    @DiscoverService(value = "image-filter-service", environment = "dev", version = "1.0.0")
-    private Optional<String> imageFilterBaseUrl;
+    @DiscoverService(value = "image-upload-services", environment = "dev", version = "1.0.0")
+    private Optional<String> imageUploadBaseUrl;
 
     @Inject
     private AmazonRekognitionClient amazonRekognitionClient;
@@ -151,11 +151,11 @@ public class AnalyzerBean {
     }
 
     private String getImageString(Integer imageId) {
-        if (imageFilterBaseUrl.isPresent()) {
+        if (imageUploadBaseUrl.isPresent()) {
             log.info("Calling imageUpload service: get image document. " + baseUrl);
             try {
                 return httpClient
-                        .target(imageFilterBaseUrl.get() + "/api/images/getImage/" + getMongoId(imageId))
+                        .target(imageUploadBaseUrl.get() + "/api/images/getImageString/" + getMongoId(imageId))
                         .request().get(new GenericType<String>() {
                         });
             } catch (WebApplicationException | ProcessingException e) {
@@ -171,7 +171,7 @@ public class AnalyzerBean {
             log.info("IMAGE SERVICE. " + baseUrl.get() + "/api/images/mongoId/" + imageId);
             try {
                 return httpClient
-                        .target(baseUrl.get() + "/api/images/url/" + imageId)
+                        .target(baseUrl.get() + "/api/images/mongoId/" + imageId)
                         .request().get(new GenericType<String>() {
                         });
             } catch (WebApplicationException | ProcessingException e) {
