@@ -13,6 +13,7 @@ public class ImageAnalyzingRunnable implements Runnable {
     private void analyze() {
         log.info("ANALIZIRAMO SLIKO!!! IMAGE-ANLYZER");
         analyzerBean = CDI.current().select(AnalyzerBean.class).get();
+        log.info(imageId + "");
         analyzerBean.analyze(imageId);
     }
 

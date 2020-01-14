@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import entities.AnalysisEntity;
 import org.apache.commons.codec.binary.Base64;
 import org.bson.Document;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -44,6 +46,9 @@ public class AnalyzerBean {
 
     @Inject
     private AmazonRekognitionClient amazonRekognitionClient;
+
+    @Inject
+    private AnalyzerBean analyzerBeanProxy;
 
     @Inject
     private MongoClient mongoClient;
@@ -147,15 +152,21 @@ public class AnalyzerBean {
     }
 
     private byte[] getImageBytes(Integer imageId) {
-        return Base64.decodeBase64(getImageString(imageId));
+        String imageString = getImageString(imageId);
+
+        return Base64.decodeBase64(imageString);
     }
 
-    private String getImageString(Integer imageId) {
+    @Timeout(value = 3, unit = ChronoUnit.SECONDS)
+    public String getImageString(Integer imageId) {
+        String mongoId = getMongoId(imageId);
+        log.info("Calling imageUpload service: get image document. " + imageUploadBaseUrl);
+        log.info("MONGOID " + mongoId);
         if (imageUploadBaseUrl.isPresent()) {
-            log.info("Calling imageUpload service: get image document. " + baseUrl);
+            log.info("Calling imageUpload service: get image document. " + imageUploadBaseUrl);
             try {
                 return httpClient
-                        .target(imageUploadBaseUrl.get() + "/api/images/getImageString/" + getMongoId(imageId))
+                        .target(imageUploadBaseUrl.get() + "/api/images/getImageString/" + mongoId)
                         .request().get(new GenericType<String>() {
                         });
             } catch (WebApplicationException | ProcessingException e) {
@@ -166,6 +177,7 @@ public class AnalyzerBean {
         return null;
     }
 
+    @Timeout(value = 3, unit = ChronoUnit.SECONDS)
     public String getMongoId(Integer imageId) {
         if (baseUrl.isPresent()) {
             log.info("IMAGE SERVICE. " + baseUrl.get() + "/api/images/mongoId/" + imageId);
