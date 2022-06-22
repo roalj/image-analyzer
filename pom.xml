@@ -33,7 +33,7 @@
 
         <aws-java-sdk.version>1.11.685</aws-java-sdk.version>
 
-        <mongoDB.version>3.12.0</mongoDB.version>
+        <mongoDB.version>3.12.8</mongoDB.version>
     </properties>
 
     <dependencyManagement>
